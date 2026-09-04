@@ -205,26 +205,43 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
 
 <h2>2. VLAN Creation and Access Port Assignment</h2>
 <p>VLANs 10 (HR), 20 (Staff), and 30 (Sales) were created on both switches, and access ports were assigned so each PC lands in the correct VLAN.</p>
+<img src="https://i.imgur.com/r4ASGGE.png)" alt="br"/>
 <h2>3. Trunk Configuration</h2>
 <p>The link between CopySwitch0 and CopySwtich1 was configured as a trunk, carrying VLANs 10, 20, and 30 between the switches.</p>
 <h2>4. Unused Port Hardening (Blackhole VLAN)</h2>
 <p>All unused switchports were placed into a dedicated VLAN 100, named BLACKHOLE, so an unauthorized device plugged into an idle port has no path onto the network.</p>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="https://i.imgur.com/7JA6iAu.png" alt="Switch0Blackhole"/>
 <h2>5. Router on a Stick</h2>
 <p>Router1 was configured with subinterfaces for each VLAN (Gig0/1.10, Gig0/1.20, Gig0/1.30 style addressing) to route traffic between VLANs.</p>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="https://i.imgur.com/CLMp2la.png" alt="FailedPing"/>
 <h2>6. Save Configuration</h2>
 <p>Running configuration was saved to startup configuration on the switches to persist the setup.</p>
 <img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
 
 <h2>Verification</h2>
-<h2>Trunk and VLAN State</h2>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<h2>Ping Test and Port to VLAN Fix</h2>
+<p>A ping to 172.16.1.20 failed with 100 percent packet loss, tracing back to a port assignment mix up on CopySwtich1 (see Mistakes and Troubleshooting below).</p>
+<img src="[https://i.imgur.com/2iWgGdz.png](https://i.imgur.com/CLMp2la.png)" alt="ping failed"/>
+<p>The fix, correcting which VLAN lived on Fa0/1 versus Fa0/2:</p>
+<img src="https://i.imgur.com/Klehlf6.png" alt="1to2part1"/>
+<img src="https://i.imgur.com/7PecHhj.png" alt="1to2part2"/>
+<p>Retesting the same ping confirms the fix, shown here failing then succeeding back to back:</p> 
+<img src="https://i.imgur.com/HNpsh0H.png" alt="fix"/>
 
-<h2>Connectivity Testing</h2>
-<p>Pings confirmed reachability within a VLAN, to the default gateway, and across VLANs through the router.</p>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<h2>Trunk and EtherChannel State</h2>
+<p><code>show interfaces trunk</code> confirms the trunk is up and carrying all three VLANs plus the native VLAN:</p>
+<img src="https://i.imgur.com/hWE9nxF.png" alt="Trunk Test"/>
+
+<p><code>show etherchannel summary</code> confirms no accidental port channel formed on the trunk link:</p>
+<img src="https://i.imgur.com/JePL1Au.png" alt="eth summary"/>
+
+<h2>Router Subinterface State</h2>
+<p><code>show ip interface brief</code> on Router1 confirms the subinterfaces are up and passing traffic:</p>
+<img src="https://i.imgur.com/HbXuB72.png" alt="state up"/>
+
+<h2>Final Connectivity Test</h2> 
+<p>A final ping to 172.16.2.10 confirms cross VLAN reachability through the router, closing out verification.</p>
+<img src="https://i.imgur.com/aITDSsy.png" alt="final test"/>
 
 <h2>Mistakes and Troubleshooting</h2>
 <h4>Mistake 1: Native VLAN Mismatch</h4>
@@ -233,11 +250,11 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
 <h4>Mistake 2: Port to VLAN Mix Up</h4>
 <p>While assigning access ports on the second switch, VLAN 40 was mistakenly applied to Fa0/1 instead of Fa0/2, which is where VLAN 10 needed to live. A follow up typo (<code>inf f0/2</code> instead of int <code>f0/2</code>) also returned an invalid input error before the correct interface was reached. The result was that the PC at 172.16.1.20 could not be reached, showing 100 percent packet loss.</p>
 
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="https://i.imgur.com/HbXuB72.png" alt="Topology"/>
 
 <p>After correcting the port assignment so Fa0/2 carried VLAN 10 and Fa0/1 carried the native VLAN, the ping succeeded with 0 percent loss.</p>
 
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="https://i.imgur.com/aITDSsy.png" alt="Topology"/>
 
 <h1>Key Takeaways</h1>
 <ul>
