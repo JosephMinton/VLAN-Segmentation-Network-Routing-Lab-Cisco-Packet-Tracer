@@ -19,7 +19,7 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
 
 <h2>Topology</h2>
 
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="https://i.imgur.com/WXpSZHO.png" alt="Topology"/>
 
 <table>
   <tr>
