@@ -255,8 +255,8 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
 <img src="https://i.imgur.com/CLMp2la.png" alt="FailedPing"/>
 
 <p>The fix, correcting which VLAN lived on Fa0/1 versus Fa0/2:</p>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
-<img src="[https://i.imgur.com/2iWgGdz.png](https://i.imgur.com/CLMp2la.png)" alt="ping failed"/>
+<img src="https://i.imgur.com/5KU0BaT.png" alt="1to2p1"/>
+<img src="https://i.imgur.com/HhzF843.png" alt="1to2p2"/>
 
 <p>Retesting the same ping confirms the fix, shown here failing then succeeding back to back:</p> 
 <img src="https://i.imgur.com/HNpsh0H.png" alt="fix"/>
@@ -281,13 +281,8 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
 <p>While configuring the trunk, the switches logged a <code>%CDP-4-NATIVE_VLAN_MISMATCH</code> warning. CopySwitch0 had the trunk native VLAN set to 40, while CopySwtich1 was still on the default native VLAN of 1. A native VLAN mismatch means untagged traffic on the trunk is interpreted as belonging to different VLANs on each end, which breaks Spanning Tree and can leak traffic between VLANs. This was resolved by setting the native VLAN to 40 on both ends of the trunk so they agreed.</p>
 
 <h4>Mistake 2: Port to VLAN Mix Up</h4>
-<p>While assigning access ports on the second switch, VLAN 40 was mistakenly applied to Fa0/1 instead of Fa0/2, which is where VLAN 10 needed to live. A follow up typo (<code>inf f0/2</code> instead of int <code>f0/2</code>) also returned an invalid input error before the correct interface was reached. The result was that the PC at 172.16.1.20 could not be reached, showing 100 percent packet loss.</p>
+<p>While assigning access ports on the second switch, VLAN 40 was mistakenly applied to Fa0/1 instead of Fa0/2, which is where VLAN 10 needed to live. A follow up typo (<code>inf f0/2</code> instead of int <code>f0/2</code>) also returned an invalid input error before the correct interface was reached. The result was that the PC at 172.16.1.20 could not be reached, showing 100 percent packet loss. After correcting the port assignment so Fa0/2 carried VLAN 10 and Fa0/1 carried the native VLAN, the ping succeeded with 0 percent loss.</p>
 
-<img src="https://i.imgur.com/HbXuB72.png" alt="Topology"/>
-
-<p>After correcting the port assignment so Fa0/2 carried VLAN 10 and Fa0/1 carried the native VLAN, the ping succeeded with 0 percent loss.</p>
-
-<img src="https://i.imgur.com/aITDSsy.png" alt="Topology"/>
 
 <h1>Key Takeaways</h1>
 <ul>
