@@ -138,6 +138,22 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
     <td><code>172.16.1.1</code></td>
   </tr>
   <tr>
+    <td>PC-E</td>
+    <td>Staff</td>
+    <td>20</td>
+    <td><code>172.16.2.20</code></td>
+    <td><code>255.255.255.0</code></td>
+    <td><code>172.16.2.1</code></td>
+  </tr>
+  <tr>
+    <td>PC-F</td>
+    <td>Sales</td>
+    <td>30</td>
+    <td><code>172.16.3.20</code></td>
+    <td><code>255.255.255.0</code></td>
+    <td><code>172.16.3.1</code></td>
+  </tr>
+  <tr>
     <td>R1 Fa0/1.10</td>
     <td>HR Gateway subinterface</td>
     <td>10</td>
@@ -203,28 +219,45 @@ This lab demonstrates VLAN segmentation, inter switch trunking, unused port hard
   <li>Default Gateway: <code>172.16.1.1</code></li>
 </ul>
 
+<h4>PC-E (VLAN 20, Staff)</h4>
+<ul>
+  <li>IP Address: <code>172.16.2.20</code></li>
+  <li>Subnet Mask: <code>255.255.255.0</code></li>
+  <li>Default Gateway: <code>172.16.2.1</code></li>
+</ul>
+
+<h4>PC-F (VLAN 30, Sales)</h4>
+<ul>
+  <li>IP Address: <code>172.16.3.20</code></li>
+  <li>Subnet Mask: <code>255.255.255.0</code></li>
+  <li>Default Gateway: <code>172.16.3.1</code></li>
+</ul>
+
 <h2>2. VLAN Creation and Access Port Assignment</h2>
 <p>VLANs 10 (HR), 20 (Staff), and 30 (Sales) were created on both switches, and access ports were assigned so each PC lands in the correct VLAN.</p>
+<p>Initial state check on CopySwtich1, before any port hardening. VLAN 1 still holds every unused port (Fa0/6 through Fa0/24, Gig0/1).</p>
 <img src="https://i.imgur.com/r4ASGGE.png)" alt="br"/>
+
 <h2>3. Trunk Configuration</h2>
 <p>The link between CopySwitch0 and CopySwtich1 was configured as a trunk, carrying VLANs 10, 20, and 30 between the switches.</p>
 <h2>4. Unused Port Hardening (Blackhole VLAN)</h2>
-<p>All unused switchports were placed into a dedicated VLAN 100, named BLACKHOLE, so an unauthorized device plugged into an idle port has no path onto the network.</p>
+<p>While configuring the trunk on CopySwitch0, a %CDP-4-NATIVE_VLAN_MISMATCH warning appeared on Fa0/4, since CopySwitch0's native VLAN was set to 40 while CopySwtich1 was still on the default native VLAN of 1. VLAN 100 was also created here as a dedicated BLACKHOLE VLAN, and unused ports were moved into it so an unauthorized device plugged into an idle port has no path onto the network.</p>
 <img src="https://i.imgur.com/7JA6iAu.png" alt="Switch0Blackhole"/>
-<h2>5. Router on a Stick</h2>
-<p>Router1 was configured with subinterfaces for each VLAN (Gig0/1.10, Gig0/1.20, Gig0/1.30 style addressing) to route traffic between VLANs.</p>
-<img src="https://i.imgur.com/CLMp2la.png" alt="FailedPing"/>
-<h2>6. Save Configuration</h2>
-<p>Running configuration was saved to startup configuration on the switches to persist the setup.</p>
-<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+
+<h3>5. Router on a Stick</h3>
+<p>Router1 was configured with subinterfaces for each VLAN (Fa0/1.10, Fa0/1.20, Fa0/1.30) to route traffic between VLANs.</p>
 
 <h2>Verification</h2>
-<h2>Ping Test and Port to VLAN Fix</h2>
+
+<h3>Ping Test and Port to VLAN Fix</h3>
 <p>A ping to 172.16.1.20 failed with 100 percent packet loss, tracing back to a port assignment mix up on CopySwtich1 (see Mistakes and Troubleshooting below).</p>
-<img src="[https://i.imgur.com/2iWgGdz.png](https://i.imgur.com/CLMp2la.png)" alt="ping failed"/>
+
+<img src="https://i.imgur.com/CLMp2la.png" alt="FailedPing"/>
+
 <p>The fix, correcting which VLAN lived on Fa0/1 versus Fa0/2:</p>
-<img src="https://i.imgur.com/Klehlf6.png" alt="1to2part1"/>
-<img src="https://i.imgur.com/7PecHhj.png" alt="1to2part2"/>
+<img src="https://i.imgur.com/2iWgGdz.png" alt="Topology"/>
+<img src="[https://i.imgur.com/2iWgGdz.png](https://i.imgur.com/CLMp2la.png)" alt="ping failed"/>
+
 <p>Retesting the same ping confirms the fix, shown here failing then succeeding back to back:</p> 
 <img src="https://i.imgur.com/HNpsh0H.png" alt="fix"/>
 
