@@ -1,4 +1,4 @@
-# VLAN Segmentation and Trunking Lab (Cisco Packet Tracer) 🖧
+# VLAN Segmentation and Trunking Lab (Cisco Packet Tracer) 🔀
 
 <h2>Description</h2>
 This lab demonstrates VLAN segmentation, inter switch trunking, unused port hardening, and inter VLAN routing using a router on a stick configuration. Two Cisco 2960 switches are trunked together, carrying three VLANs, with a 1941 router providing routing between them. Six PCs (two per VLAN) confirm that devices in the same VLAN can communicate while devices in different VLANs require the router to reach each other.
